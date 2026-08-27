@@ -202,7 +202,7 @@ export default function EmbedCodeButton() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex h-20 flex-1 sm:h-14 items-center justify-center gap-2 whitespace-nowrap rounded-2xl bg-gradient-to-b from-[#707bf7] to-[#4752c4] px-6 text-lg font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_10px_20px_-8px_rgba(71,82,196,0.6)] ring-1 ring-black/10 transition-transform hover:scale-[1.02] active:scale-[0.98]"
+        className="inline-flex h-20 flex-1 sm:h-14 items-center justify-center gap-2 whitespace-nowrap rounded-2xl border border-black/10 bg-white px-6 text-lg font-semibold text-black shadow-sm transition-transform hover:scale-[1.02] active:scale-[0.98]"
       >
         <DiscordIcon className="h-6 w-6 fill-current" />
         Copy embed code
