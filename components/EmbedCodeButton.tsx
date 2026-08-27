@@ -3,6 +3,24 @@
 import { useEffect, useState } from "react";
 import TemplatePreviewCarousel from "@/components/TemplatePreviewCarousel";
 import { generateDiscordWidgetCode } from "@/lib/discord-widget-source";
+import { generateDiscordWidgetHtmlCode } from "@/lib/discord-widget-html-source";
+
+function HtmlIcon({ className }: { className: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="16 18 22 12 16 6" />
+      <polyline points="8 6 2 12 8 18" />
+    </svg>
+  );
+}
 
 function DiscordIcon({ className }: { className: string }) {
   return (
@@ -75,6 +93,7 @@ export default function EmbedCodeButton() {
     "idle" | "loading" | "error"
   >("idle");
   const [previewTheme, setPreviewTheme] = useState<"light" | "dark">("light");
+  const [language, setLanguage] = useState<"ts" | "html">("ts");
   const [copied, setCopied] = useState(false);
   const [lanyardInvite, setLanyardInvite] = useState<LanyardGuildInvite | null>(
     null,
@@ -159,10 +178,16 @@ export default function EmbedCodeButton() {
 
   const canContinue = step !== 2 || profile !== null;
 
-  const embedCode = generateDiscordWidgetCode(
-    userId.trim() || "SEU_DISCORD_USER_ID",
-    previewTheme,
-  );
+  const embedCode =
+    language === "ts"
+      ? generateDiscordWidgetCode(
+          userId.trim() || "SEU_DISCORD_USER_ID",
+          previewTheme,
+        )
+      : generateDiscordWidgetHtmlCode(
+          userId.trim() || "SEU_DISCORD_USER_ID",
+          previewTheme,
+        );
 
   async function handleCopySnippet() {
     try {
@@ -372,25 +397,54 @@ export default function EmbedCodeButton() {
                 <div className="flex-1">
                   <h3 className="text-base font-semibold">Linguagem</h3>
                   <p className="mt-1 text-sm text-black/50">
-                    Escolha a linguagem que seu projeto está usando.
+                    Escolha em qual linguagem você quer receber o código.
                   </p>
-                  <div className="mt-4 flex items-center justify-between rounded-xl border-2 border-black bg-black/5 px-4 py-3">
-                    <div className="flex items-center gap-2.5">
+                  <div className="mt-4 grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setLanguage("ts")}
+                      aria-pressed={language === "ts"}
+                      className={`flex items-center gap-2.5 rounded-xl border-2 px-4 py-3 text-left transition-colors ${
+                        language === "ts"
+                          ? "border-black bg-black/5"
+                          : "border-black/10 hover:border-black/20"
+                      }`}
+                    >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src="/typescript-logo.png"
                         alt="TypeScript"
                         className="h-7 w-7 shrink-0 rounded-md object-cover"
                       />
-                      <span className="text-sm font-semibold">
+                      <span className="flex-1 text-sm font-semibold">
                         TypeScript
                       </span>
-                    </div>
-                    <CheckIcon className="h-5 w-5 shrink-0 text-black" />
+                      {language === "ts" && (
+                        <CheckIcon className="h-5 w-5 shrink-0 text-black" />
+                      )}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setLanguage("html")}
+                      aria-pressed={language === "html"}
+                      className={`flex items-center gap-2.5 rounded-xl border-2 px-4 py-3 text-left transition-colors ${
+                        language === "html"
+                          ? "border-black bg-black/5"
+                          : "border-black/10 hover:border-black/20"
+                      }`}
+                    >
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[#e34f26]">
+                        <HtmlIcon className="h-4 w-4 text-white" />
+                      </span>
+                      <span className="flex-1 text-sm font-semibold">
+                        HTML
+                      </span>
+                      {language === "html" && (
+                        <CheckIcon className="h-5 w-5 shrink-0 text-black" />
+                      )}
+                    </button>
                   </div>
-                  <p className="mt-2 text-xs text-black/40">
-                    Mais linguagens em breve.
-                  </p>
                 </div>
               </div>
             </div>
@@ -492,45 +546,80 @@ export default function EmbedCodeButton() {
 
                   <div className="mt-6">
                     <h4 className="text-sm font-semibold">Seu código</h4>
-                    <p className="mt-1 text-xs text-black/50">
-                      Pré-requisito: um projeto React (Next.js, Vite, etc.)
-                      com Tailwind CSS configurado. Já vem com seu Discord
-                      User ID preenchido.
-                    </p>
-
-                    <ol className="mt-3 flex flex-col gap-2 text-xs text-black/70">
-                      <li className="flex gap-2">
-                        <span className="font-semibold text-black">1.</span>
-                        <span>
-                          Copie o código abaixo e salve num arquivo chamado{" "}
-                          <code className="rounded bg-black/[0.06] px-1 py-0.5 font-mono">
-                            discord-widget.tsx
-                          </code>{" "}
-                          dentro da pasta de componentes do seu projeto (ex.:{" "}
-                          <code className="rounded bg-black/[0.06] px-1 py-0.5 font-mono">
-                            components/discord-widget.tsx
-                          </code>
-                          ).
-                        </span>
-                      </li>
-                      <li className="flex gap-2">
-                        <span className="font-semibold text-black">2.</span>
-                        <span>
-                          Importe o componente no arquivo onde quer mostrar o
-                          widget (ex.: sua página inicial).
-                        </span>
-                      </li>
-                      <li className="flex gap-2">
-                        <span className="font-semibold text-black">3.</span>
-                        <span>
-                          Use{" "}
-                          <code className="rounded bg-black/[0.06] px-1 py-0.5 font-mono">
-                            {"<DiscordWidget />"}
-                          </code>{" "}
-                          no JSX, sem precisar passar nenhuma prop.
-                        </span>
-                      </li>
-                    </ol>
+                    {language === "ts" ? (
+                      <>
+                        <p className="mt-1 text-xs text-black/50">
+                          Pré-requisito: um projeto React (Next.js, Vite,
+                          etc.) com Tailwind CSS configurado. Já vem com seu
+                          Discord User ID preenchido.
+                        </p>
+                        <ol className="mt-3 flex flex-col gap-2 text-xs text-black/70">
+                          <li className="flex gap-2">
+                            <span className="font-semibold text-black">
+                              1.
+                            </span>
+                            <span>
+                              Copie o código abaixo e salve num arquivo
+                              chamado{" "}
+                              <code className="rounded bg-black/[0.06] px-1 py-0.5 font-mono">
+                                discord-widget.tsx
+                              </code>{" "}
+                              dentro da pasta de componentes do seu projeto
+                              (ex.:{" "}
+                              <code className="rounded bg-black/[0.06] px-1 py-0.5 font-mono">
+                                components/discord-widget.tsx
+                              </code>
+                              ).
+                            </span>
+                          </li>
+                          <li className="flex gap-2">
+                            <span className="font-semibold text-black">
+                              2.
+                            </span>
+                            <span>
+                              Importe o componente no arquivo onde quer
+                              mostrar o widget (ex.: sua página inicial).
+                            </span>
+                          </li>
+                          <li className="flex gap-2">
+                            <span className="font-semibold text-black">
+                              3.
+                            </span>
+                            <span>
+                              Use{" "}
+                              <code className="rounded bg-black/[0.06] px-1 py-0.5 font-mono">
+                                {"<DiscordWidget />"}
+                              </code>{" "}
+                              no JSX, sem precisar passar nenhuma prop.
+                            </span>
+                          </li>
+                        </ol>
+                      </>
+                    ) : (
+                      <>
+                        <p className="mt-1 text-xs text-black/50">
+                          Funciona em qualquer site (HTML puro, WordPress,
+                          etc.). Já vem com seu Discord User ID preenchido.
+                        </p>
+                        <ol className="mt-3 flex flex-col gap-2 text-xs text-black/70">
+                          <li className="flex gap-2">
+                            <span className="font-semibold text-black">
+                              1.
+                            </span>
+                            <span>Copie o código abaixo.</span>
+                          </li>
+                          <li className="flex gap-2">
+                            <span className="font-semibold text-black">
+                              2.
+                            </span>
+                            <span>
+                              Cole no HTML da sua página, no lugar exato onde
+                              quer que o widget apareça.
+                            </span>
+                          </li>
+                        </ol>
+                      </>
+                    )}
 
                     <div className="relative mt-3 max-h-64 overflow-auto rounded-xl bg-[#0d0d10] p-4 pr-14">
                       <pre className="whitespace-pre font-mono text-xs leading-relaxed text-white/90">
@@ -550,12 +639,16 @@ export default function EmbedCodeButton() {
                       </button>
                     </div>
 
-                    <p className="mt-3 text-xs font-medium text-black/50">
-                      No arquivo onde for usar:
-                    </p>
-                    <pre className="mt-1.5 whitespace-pre rounded-xl border border-black/10 bg-black/[0.03] p-3 font-mono text-xs leading-relaxed text-black/80">
-                      {`import { DiscordWidget } from "./discord-widget";\n\n<DiscordWidget />`}
-                    </pre>
+                    {language === "ts" && (
+                      <>
+                        <p className="mt-3 text-xs font-medium text-black/50">
+                          No arquivo onde for usar:
+                        </p>
+                        <pre className="mt-1.5 whitespace-pre rounded-xl border border-black/10 bg-black/[0.03] p-3 font-mono text-xs leading-relaxed text-black/80">
+                          {`import { DiscordWidget } from "./discord-widget";\n\n<DiscordWidget />`}
+                        </pre>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
