@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import TemplatePreviewCarousel from "@/components/TemplatePreviewCarousel";
 import { generateDiscordWidgetCode } from "@/lib/discord-widget-source";
 import { generateDiscordWidgetHtmlCode } from "@/lib/discord-widget-html-source";
+import { generateDiscordWidgetMarkdownCode } from "@/lib/discord-widget-markdown-source";
 
 function HtmlIcon({ className }: { className: string }) {
   return (
@@ -18,6 +19,14 @@ function HtmlIcon({ className }: { className: string }) {
     >
       <polyline points="16 18 22 12 16 6" />
       <polyline points="8 6 2 12 8 18" />
+    </svg>
+  );
+}
+
+function MarkdownIcon({ className }: { className: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+      <path d="M2.85 3A1.85 1.85 0 0 0 1 4.85v14.3A1.85 1.85 0 0 0 2.85 21h18.3A1.85 1.85 0 0 0 23 19.15V4.85A1.85 1.85 0 0 0 21.15 3H2.85ZM5 15.5V8.5h2.25l2.25 2.813L11.75 8.5H14v7h-2.25v-3.7l-2.5 3.05-2.5-3.05v3.7H5Zm14.75-4.25L16.5 15 13.25 11.25h2V8.5h2.5v2.75h2Z" />
     </svg>
   );
 }
@@ -93,7 +102,7 @@ export default function EmbedCodeButton() {
     "idle" | "loading" | "error"
   >("idle");
   const [previewTheme, setPreviewTheme] = useState<"light" | "dark">("light");
-  const [language, setLanguage] = useState<"ts" | "html">("ts");
+  const [language, setLanguage] = useState<"ts" | "html" | "md">("ts");
   const [copied, setCopied] = useState(false);
   const [lanyardInvite, setLanyardInvite] = useState<LanyardGuildInvite | null>(
     null,
@@ -184,10 +193,15 @@ export default function EmbedCodeButton() {
           userId.trim() || "SEU_DISCORD_USER_ID",
           previewTheme,
         )
-      : generateDiscordWidgetHtmlCode(
-          userId.trim() || "SEU_DISCORD_USER_ID",
-          previewTheme,
-        );
+      : language === "html"
+        ? generateDiscordWidgetHtmlCode(
+            userId.trim() || "SEU_DISCORD_USER_ID",
+            previewTheme,
+          )
+        : generateDiscordWidgetMarkdownCode(
+            userId.trim() || "SEU_DISCORD_USER_ID",
+            previewTheme,
+          );
 
   async function handleCopySnippet() {
     try {
@@ -399,50 +413,67 @@ export default function EmbedCodeButton() {
                   <p className="mt-1 text-sm text-black/50">
                     Escolha em qual linguagem você quer receber o código.
                   </p>
-                  <div className="mt-4 grid grid-cols-2 gap-3">
+                  <div className="mt-4 grid grid-cols-3 gap-3">
                     <button
                       type="button"
                       onClick={() => setLanguage("ts")}
                       aria-pressed={language === "ts"}
-                      className={`flex items-center gap-2.5 rounded-xl border-2 px-4 py-3 text-left transition-colors ${
+                      className={`relative flex min-h-[112px] flex-col items-center justify-center gap-2.5 rounded-xl border-2 px-3 py-5 text-center transition-colors ${
                         language === "ts"
                           ? "border-black bg-black/5"
                           : "border-black/10 hover:border-black/20"
                       }`}
                     >
+                      {language === "ts" && (
+                        <CheckIcon className="absolute right-2.5 top-2.5 h-5 w-5 shrink-0 text-black" />
+                      )}
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src="/typescript-logo.png"
                         alt="TypeScript"
-                        className="h-7 w-7 shrink-0 rounded-md object-cover"
+                        className="h-8 w-8 shrink-0 rounded-md object-cover"
                       />
-                      <span className="flex-1 text-sm font-semibold">
+                      <span className="text-sm font-semibold">
                         TypeScript
                       </span>
-                      {language === "ts" && (
-                        <CheckIcon className="h-5 w-5 shrink-0 text-black" />
-                      )}
                     </button>
 
                     <button
                       type="button"
                       onClick={() => setLanguage("html")}
                       aria-pressed={language === "html"}
-                      className={`flex items-center gap-2.5 rounded-xl border-2 px-4 py-3 text-left transition-colors ${
+                      className={`relative flex min-h-[112px] flex-col items-center justify-center gap-2.5 rounded-xl border-2 px-3 py-5 text-center transition-colors ${
                         language === "html"
                           ? "border-black bg-black/5"
                           : "border-black/10 hover:border-black/20"
                       }`}
                     >
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[#e34f26]">
+                      {language === "html" && (
+                        <CheckIcon className="absolute right-2.5 top-2.5 h-5 w-5 shrink-0 text-black" />
+                      )}
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#e34f26]">
                         <HtmlIcon className="h-4 w-4 text-white" />
                       </span>
-                      <span className="flex-1 text-sm font-semibold">
-                        HTML
-                      </span>
-                      {language === "html" && (
-                        <CheckIcon className="h-5 w-5 shrink-0 text-black" />
+                      <span className="text-sm font-semibold">HTML</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setLanguage("md")}
+                      aria-pressed={language === "md"}
+                      className={`relative flex min-h-[112px] flex-col items-center justify-center gap-2.5 rounded-xl border-2 px-3 py-5 text-center transition-colors ${
+                        language === "md"
+                          ? "border-black bg-black/5"
+                          : "border-black/10 hover:border-black/20"
+                      }`}
+                    >
+                      {language === "md" && (
+                        <CheckIcon className="absolute right-2.5 top-2.5 h-5 w-5 shrink-0 text-black" />
                       )}
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#083fa1]">
+                        <MarkdownIcon className="h-4 w-4 text-white" />
+                      </span>
+                      <span className="text-sm font-semibold">Markdown</span>
                     </button>
                   </div>
                 </div>
@@ -595,7 +626,7 @@ export default function EmbedCodeButton() {
                           </li>
                         </ol>
                       </>
-                    ) : (
+                    ) : language === "html" ? (
                       <>
                         <p className="mt-1 text-xs text-black/50">
                           Funciona em qualquer site (HTML puro, WordPress,
@@ -618,6 +649,44 @@ export default function EmbedCodeButton() {
                             </span>
                           </li>
                         </ol>
+                      </>
+                    ) : (
+                      <>
+                        <p className="mt-1 text-xs text-black/50">
+                          Ideal para o README.md do seu perfil no GitHub (ou
+                          qualquer lugar que renderize Markdown). Como o
+                          GitHub remove tags {"<script>"}, aqui o widget vira
+                          uma imagem gerada ao vivo pelo nosso servidor.
+                        </p>
+                        <ol className="mt-3 flex flex-col gap-2 text-xs text-black/70">
+                          <li className="flex gap-2">
+                            <span className="font-semibold text-black">
+                              1.
+                            </span>
+                            <span>Copie o código abaixo.</span>
+                          </li>
+                          <li className="flex gap-2">
+                            <span className="font-semibold text-black">
+                              2.
+                            </span>
+                            <span>
+                              Cole no{" "}
+                              <code className="rounded bg-black/[0.06] px-1 py-0.5 font-mono">
+                                README.md
+                              </code>{" "}
+                              do repositório especial{" "}
+                              <code className="rounded bg-black/[0.06] px-1 py-0.5 font-mono">
+                                seu-usuario/seu-usuario
+                              </code>{" "}
+                              (o README de perfil do GitHub).
+                            </span>
+                          </li>
+                        </ol>
+                        <p className="mt-2 text-[11px] text-black/40">
+                          Obs.: o GitHub faz cache de imagens externas, então
+                          a atualização pode levar alguns minutos para
+                          aparecer.
+                        </p>
                       </>
                     )}
 
