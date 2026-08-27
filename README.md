@@ -3,7 +3,7 @@
 <a href="https://discord-widget.vercel.app/"><img src="imgs/banner.png" alt="Discord Widget" width="100%"></a>
 
 [![GitHub Stars](https://img.shields.io/github/stars/miguelrcha/discord-widget.svg?style=flat&logo=github)](https://github.com/miguelrcha/discord-widget/)
-[![Website](https://img.shields.io/website?url=https%3A%2F%2Fdiscord-widget.vercel.app&style=flat&logo=vercel&label=website)](https://discord-widget.vercel.app/)
+[![Website](https://img.shields.io/website?url=https%3A%2F%2Fdiscord-widget.vercel.app&style=flat&logo=vercel&label=website)](https://discord-widget-app.vercel.app/)
 
 </div>
 
