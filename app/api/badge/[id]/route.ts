@@ -207,6 +207,10 @@ export async function GET(
     data = null;
   }
 
+  if (searchParams.get("debug")) {
+    return NextResponse.json({ data });
+  }
+
   if (!data) {
     return svgResponse(
       buildSvg([], {
