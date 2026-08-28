@@ -113,21 +113,24 @@ function buildSvg(
         cardBorder: "rgba(0,0,0,0.1)",
       };
 
-  const width = 340;
   const headingHeight = 28;
   const gap = 12;
-  const cardHeight = 88;
-  const cardPad = 12;
-  const imageSize = 64;
   const titleText = escapeXml(truncate(opts.title, 24));
+
+  // A single card keeps the original wide layout (image beside the text);
+  // two or more sit in a grid, up to 2 per row (wrapping to further rows),
+  // so they read left-to-right instead of stacking into a tall column.
+  const columns = items.length <= 1 ? 1 : Math.min(items.length, 2);
+  const cardWidth = columns === 1 ? 340 : 260;
+  const cardHeight = columns === 1 ? 88 : 96;
+  const cardPad = columns === 1 ? 12 : 12;
+  const imageSize = columns === 1 ? 64 : 56;
+  const rows = items.length > 0 ? Math.ceil(items.length / columns) : 0;
+  const width = items.length > 0 ? columns * cardWidth + (columns - 1) * gap : 340;
   const dotX = 16 + Math.min(180, titleText.length * 9) + 12;
 
   const bodyHeight =
-    items.length > 0
-      ? items.length * cardHeight + (items.length - 1) * gap
-      : opts.message
-        ? 20
-        : 0;
+    rows > 0 ? rows * cardHeight + (rows - 1) * gap : opts.message ? 20 : 0;
   const height = headingHeight + (bodyHeight > 0 ? gap + bodyHeight : 0);
 
   const dot = opts.showDot
@@ -136,17 +139,19 @@ function buildSvg(
 
   const cards = items
     .map((item, index) => {
-      const cardY = headingHeight + gap + index * (cardHeight + gap);
+      const cardX = (index % columns) * (cardWidth + gap);
+      const cardY = headingHeight + gap + Math.floor(index / columns) * (cardHeight + gap);
       const clipId = `dw-clip-${index}`;
       const image = item.image
-        ? `<clipPath id="${clipId}"><rect x="${cardPad}" y="${cardY + cardPad}" width="${imageSize}" height="${imageSize}" rx="12" /></clipPath>` +
-          `<image href="${item.image}" x="${cardPad}" y="${cardY + cardPad}" width="${imageSize}" height="${imageSize}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${clipId})" />`
+        ? `<clipPath id="${clipId}"><rect x="${cardX + cardPad}" y="${cardY + cardPad}" width="${imageSize}" height="${imageSize}" rx="12" /></clipPath>` +
+          `<image href="${item.image}" x="${cardX + cardPad}" y="${cardY + cardPad}" width="${imageSize}" height="${imageSize}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${clipId})" />`
         : "";
-      const textX = item.image ? cardPad + imageSize + 12 : cardPad + 12;
-      const textMaxChars = item.image ? 26 : 32;
+      const textX = cardX + (item.image ? cardPad + imageSize + 12 : cardPad + 12);
+      const textMaxChars =
+        columns === 1 ? (item.image ? 26 : 32) : item.image ? 20 : 26;
       return (
         `<g>` +
-        `<rect x="0" y="${cardY}" width="${width}" height="${cardHeight}" rx="16" fill="${colors.cardBg}" stroke="${colors.cardBorder}" stroke-width="1" filter="url(#dw-shadow)" />` +
+        `<rect x="${cardX}" y="${cardY}" width="${cardWidth}" height="${cardHeight}" rx="16" fill="${colors.cardBg}" stroke="${colors.cardBorder}" stroke-width="1" filter="url(#dw-shadow)" />` +
         image +
         `<text x="${textX}" y="${cardY + 30}" font-size="12" font-weight="500" fill="${colors.subtext}">${escapeXml(truncate(item.kicker, textMaxChars))}</text>` +
         `<text x="${textX}" y="${cardY + 48}" font-size="14" font-weight="700" fill="${colors.text}">${escapeXml(truncate(item.name, textMaxChars))}</text>` +
