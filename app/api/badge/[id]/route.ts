@@ -196,6 +196,29 @@ export async function GET(
     );
   }
 
+  if (searchParams.get("debug")) {
+    const attempts = [];
+    for (let i = 0; i < 3; i++) {
+      try {
+        const res = await fetch(`${REST_BASE}/${encodeURIComponent(userId)}`, {
+          signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+          cache: "no-store",
+        });
+        const json = res.ok ? await res.json() : null;
+        attempts.push({
+          status: res.status,
+          headers: Object.fromEntries(res.headers.entries()),
+          activitiesCount: json?.data?.activities?.length ?? null,
+          activityTypes: json?.data?.activities?.map((a: LanyardActivity) => a.type) ?? null,
+        });
+      } catch (e) {
+        attempts.push({ error: String(e) });
+      }
+      await new Promise((r) => setTimeout(r, 500));
+    }
+    return NextResponse.json({ attempts });
+  }
+
   let data: LanyardData | null = null;
   try {
     const res = await fetch(`${REST_BASE}/${encodeURIComponent(userId)}`, {
@@ -205,10 +228,6 @@ export async function GET(
     if (json?.success && json?.data) data = json.data;
   } catch {
     data = null;
-  }
-
-  if (searchParams.get("debug")) {
-    return NextResponse.json({ data });
   }
 
   if (!data) {
