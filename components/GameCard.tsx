@@ -1,10 +1,16 @@
 import ActivityHeading from "@/components/ActivityHeading";
 import PresenceCard from "@/components/PresenceCard";
 
-export default function GameCard() {
+type Theme = "light" | "dark";
+
+export default function GameCard({
+  theme = "light",
+}: {
+  theme?: Theme;
+}) {
   return (
     <div className="w-[260px]">
-      <ActivityHeading />
+      <ActivityHeading theme={theme} />
       <PresenceCard
         icon={
           // eslint-disable-next-line @next/next/no-img-element
@@ -19,6 +25,7 @@ export default function GameCard() {
         kicker="Playing"
         title="Valorant"
         subtitle="Competitive · 24:10 elapsed"
+        theme={theme}
       />
     </div>
   );

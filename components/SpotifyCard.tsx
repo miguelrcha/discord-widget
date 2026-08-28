@@ -1,10 +1,16 @@
 import ActivityHeading from "@/components/ActivityHeading";
 import PresenceCard from "@/components/PresenceCard";
 
-export default function SpotifyCard() {
+type Theme = "light" | "dark";
+
+export default function SpotifyCard({
+  theme = "light",
+}: {
+  theme?: Theme;
+}) {
   return (
     <div className="w-[260px]">
-      <ActivityHeading />
+      <ActivityHeading theme={theme} />
       <PresenceCard
         icon={
           // eslint-disable-next-line @next/next/no-img-element
@@ -19,6 +25,7 @@ export default function SpotifyCard() {
         kicker="Listening to Spotify"
         title="GRWM"
         subtitle="Mc Iguinho Ct; Dj Aladin GDB; M…"
+        theme={theme}
       />
     </div>
   );

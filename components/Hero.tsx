@@ -2,6 +2,7 @@ import ActivityCard from "@/components/ActivityCard";
 import SpotifyCard from "@/components/SpotifyCard";
 import GameCard from "@/components/GameCard";
 import EmbedCodeButton from "@/components/EmbedCodeButton";
+import LivePreviewButton from "@/components/LivePreviewButton";
 
 export default function Hero() {
   return (
@@ -68,6 +69,8 @@ export default function Hero() {
           View on GitHub
         </a>
       </div>
+
+      <LivePreviewButton />
     </section>
   );
 }

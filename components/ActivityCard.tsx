@@ -1,6 +1,8 @@
 import ActivityHeading from "@/components/ActivityHeading";
 import PresenceCard from "@/components/PresenceCard";
 
+type Theme = "light" | "dark";
+
 function CodeIcon() {
   return (
     <svg
@@ -18,16 +20,21 @@ function CodeIcon() {
   );
 }
 
-export default function ActivityCard() {
+export default function ActivityCard({
+  theme = "light",
+}: {
+  theme?: Theme;
+}) {
   return (
     <div className="w-[260px]">
-      <ActivityHeading />
+      <ActivityHeading theme={theme} />
       <PresenceCard
         icon={<CodeIcon />}
         iconBg="bg-[#1e2124]"
         kicker="Playing"
         title="Visual Studio Code"
         subtitle="Editing layout.tsx · Workspace:…"
+        theme={theme}
       />
     </div>
   );
